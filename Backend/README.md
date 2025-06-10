@@ -52,3 +52,59 @@ POST
   ]
 }
 ```
+
+## /api/user/login
+
+**Description**  
+Logs in an existing user.
+
+**Method**  
+POST
+
+**Request Body**
+```json
+{
+  "email": "required, valid email address",
+  "password": "required, string, at least 6 characters"
+}
+```
+
+**Responses**  
+- **200**: User logged in successfully, returns JSON with `token` and `user`  
+- **400**: Validation error, returns JSON with `{ errors: [...] }`  
+- **401**: Invalid email or password  
+
+### Example Successful Response (200)
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.abc123",
+  "user": {
+    "_id": "6486bec9fe398da6e48910f8",
+    "fullName": {
+      "firstName": "Divyansh",
+      "lastName": "Gupta"
+    },
+    "email": "divyansh.gupta@example.com"
+  }
+}
+```
+
+### Example Validation Error Response (400)
+```json
+{
+  "errors": [
+    {
+      "msg": "Invalid email address",
+      "param": "email",
+      "location": "body"
+    }
+  ]
+}
+```
+
+### Example Invalid Credentials Response (401)
+```json
+{
+  "message": "Invalid email or password"
+}
+```
