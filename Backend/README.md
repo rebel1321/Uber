@@ -108,3 +108,71 @@ POST
   "message": "Invalid email or password"
 }
 ```
+
+## /api/user/profile
+
+**Description**  
+Fetches the authenticated user's profile (requires authentication).
+
+**Method**  
+GET
+
+**Headers**  
+- `Authorization`: Bearer <token>
+
+**Responses**  
+- **200**: Returns the authenticated user's profile  
+- **401**: Unauthorized if no valid token is provided  
+
+### Example Successful Response (200)
+
+```json
+{
+  "user": {
+    "_id": "6486bec9fe398da6e48910f8",
+    "fullName": {
+      "firstName": "Divyansh",
+      "lastName": "Gupta"
+    },
+    "email": "divyansh.gupta@example.com"
+  },
+  "message": "User profile fetched successfully"
+}
+```
+
+### Example Unauthorized Response (401)
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+## /api/user/logout
+
+**Description**  
+Logs out the authenticated user (requires authentication).
+
+**Method**  
+GET
+
+**Headers**  
+- `Authorization`: Bearer <token>
+
+**Responses**  
+- **200**: User logged out successfully  
+- **401**: Unauthorized if no valid token is provided  
+
+### Example Successful Response (200)
+
+```json
+{
+  "message": "User logged out successfully"
+}
+```
+
+### Example Unauthorized Response (401)
+```json
+{
+  "message": "Unauthorized"
+}
+```
