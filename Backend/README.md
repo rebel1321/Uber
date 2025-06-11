@@ -176,3 +176,68 @@ GET
   "message": "Unauthorized"
 }
 ```
+
+## /api/captain/register
+
+**Description**  
+Registers a new captain.
+
+**Method**  
+POST
+
+**Request Body**
+```json
+{
+  "email": "required, valid email address",
+  "password": "required, string, at least 6 characters",
+  "fullName": {
+    "firstName": "required, string, at least 3 characters",
+    "lastName": "optional, string"
+  },
+  "vehicle": {
+    "color": "required, string, at least 3 characters",
+    "plate": "required, string, at least 3 characters",
+    "capacity": "required, at least 1 character",
+    "vehicleType": "required, must be one of: car, motorcycle, auto"
+  }
+}
+```
+
+**Responses**  
+- **201**: Captain registered successfully, returns JSON with captain data  
+- **400**: Validation error, returns JSON with `{ errors: [...] }`  
+
+### Example Successful Response (201)
+```json
+{
+  "token": "captainAuthToken",
+  "captain": {
+    "_id": "64b12e6902ab98ca235f52f1",
+    "fullName": {
+      "firstName": "Jane",
+      "lastName": "Doe"
+    },
+    "email": "jane.doe@example.com",
+    "vehicle": {
+      "color": "Blue",
+      "model": "Sedan",
+      "plate": "ABC123",
+      "capacity": "4",
+      "vehicleType": "car"
+    }
+  }
+}
+```
+
+### Example Error Response (400)
+```json
+{
+  "errors": [
+    {
+      "msg": "Invalid email address",
+      "param": "email",
+      "location": "body"
+    }
+  ]
+}
+```
