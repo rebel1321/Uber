@@ -6,8 +6,7 @@ Creates a new user in the system.
 **Method**  
 POST
 
-**Request Body**
-
+**Request Body**  
 ```json
 {
   "fullName": {
@@ -19,28 +18,26 @@ POST
 }
 ```
 
-**Responses**
-
-- **201**: User created successfully, returns JSON with `token` and `user`
+**Responses**  
+- **201**: User created successfully, returns JSON with `token` and `user`  
 - **400**: Validation error, returns JSON with `{ errors: [...] }`
 
-
-## Example Successful Response (201)
+### Example Successful Response (201)
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODQ2YmViN2ZlMzk4ZGE2ZTQ4OTEwZjgiLCJpYXQiOjE3NDk0NjY4MDgsImV4cCI6MTc0OTQ3MDQwOH0.WJ11gROSTsAqkFpws1JtKDaaAZlE2zD3ju8shrphSTs",
-    "user": {
-        "fullName": {
-            "firstName": "Divyansh",
-            "lastName": "Gupta"
-        },
-        "email": "divyansh.gupta@example.com",
-        "password": "$2b$10$sSZ11fGMqnE8LW3GlPN0wOEkV2u.gHW/cjYHRW8lqcUkIfZdKSRjO",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "fullName": {
+      "firstName": "Divyansh",
+      "lastName": "Gupta"
+    },
+    "email": "divyansh.gupta@example.com",
+    "password": "$2b$10$..."
   }
 }
 ```
 
-## Example Error Response (400)
+### Example Error Response (400)
 ```json
 {
   "errors": [
@@ -53,6 +50,8 @@ POST
 }
 ```
 
+---
+
 ## /api/user/login
 
 **Description**  
@@ -61,7 +60,7 @@ Logs in an existing user.
 **Method**  
 POST
 
-**Request Body**
+**Request Body**  
 ```json
 {
   "email": "required, valid email address",
@@ -72,7 +71,7 @@ POST
 **Responses**  
 - **200**: User logged in successfully, returns JSON with `token` and `user`  
 - **400**: Validation error, returns JSON with `{ errors: [...] }`  
-- **401**: Invalid email or password  
+- **401**: Invalid email or password
 
 ### Example Successful Response (200)
 ```json
@@ -109,6 +108,8 @@ POST
 }
 ```
 
+---
+
 ## /api/user/profile
 
 **Description**  
@@ -122,10 +123,9 @@ GET
 
 **Responses**  
 - **200**: Returns the authenticated user's profile  
-- **401**: Unauthorized if no valid token is provided  
+- **401**: Unauthorized if no valid token is provided
 
 ### Example Successful Response (200)
-
 ```json
 {
   "user": {
@@ -147,6 +147,8 @@ GET
 }
 ```
 
+---
+
 ## /api/user/logout
 
 **Description**  
@@ -160,10 +162,9 @@ GET
 
 **Responses**  
 - **200**: User logged out successfully  
-- **401**: Unauthorized if no valid token is provided  
+- **401**: Unauthorized if no valid token is provided
 
 ### Example Successful Response (200)
-
 ```json
 {
   "message": "User logged out successfully"
@@ -176,6 +177,8 @@ GET
   "message": "Unauthorized"
 }
 ```
+
+---
 
 ## /api/captain/register
 
@@ -205,7 +208,7 @@ POST
 
 **Responses**  
 - **201**: Captain registered successfully, returns JSON with captain data  
-- **400**: Validation error, returns JSON with `{ errors: [...] }`  
+- **400**: Validation error, returns JSON with `{ errors: [...] }`
 
 ### Example Successful Response (201)
 ```json
@@ -239,5 +242,136 @@ POST
       "location": "body"
     }
   ]
+}
+```
+
+---
+
+## /api/captain/login
+
+**Description**  
+Logs in an existing captain.
+
+**Method**  
+POST
+
+**Request Body**  
+```json
+{
+  "email": "required, valid email address",
+  "password": "required, string, at least 6 characters"
+}
+```
+
+**Responses**  
+- **200**: Captain logged in successfully, returns JSON with `token` and `captain`  
+- **400**: Validation error, returns JSON with `{ errors: [...] }`
+
+### Example Successful Response (200)
+```json
+{
+  "token": "captainAuthToken552",
+  "captain": {
+    "_id": "64b1ec6892cab85f235f52f2",
+    "fullName": {
+      "firstName": "Alice",
+      "lastName": "Smith"
+    },
+    "email": "alice.smith@example.com",
+    "vehicle": {
+      "color": "Red",
+      "plate": "XYZ789",
+      "capacity": "2",
+      "vehicleType": "motorcycle"
+    }
+  }
+}
+```
+
+### Example Error Response (400)
+```json
+{
+  "errors": [
+    {
+      "msg": "Invalid email address",
+      "param": "email",
+      "location": "body"
+    }
+  ]
+}
+```
+
+---
+
+## /api/captain/profile
+
+**Description**  
+Fetches the authenticated captain's profile (requires authentication).
+
+**Method**  
+GET
+
+**Headers**  
+- `Authorization`: Bearer <token>
+
+**Responses**  
+- **200**: Returns the authenticated captain's profile  
+- **401**: Unauthorized if no valid token is provided  
+
+### Example Successful Response (200)
+```json
+{
+  "captain": {
+    "_id": "64b1ec6892cab85f235f52f2",
+    "fullName": {
+      "firstName": "Alice",
+      "lastName": "Smith"
+    },
+    "email": "alice.smith@example.com",
+    "vehicle": {
+      "color": "Red",
+      "plate": "XYZ789",
+      "capacity": "2",
+      "vehicleType": "motorcycle"
+    }
+  }
+}
+```
+
+### Example Unauthorized Response (401)
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+---
+
+## /api/captain/logout
+
+**Description**  
+Logs out the authenticated captain (requires authentication).
+
+**Method**  
+GET
+
+**Headers**  
+- `Authorization`: Bearer <token>
+
+**Responses**  
+- **200**: Captain logged out successfully  
+- **401**: Unauthorized if no valid token is provided  
+
+### Example Successful Response (200)
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+### Example Unauthorized Response (401)
+```json
+{
+  "message": "Unauthorized"
 }
 ```
