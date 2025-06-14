@@ -18,9 +18,10 @@ const CaptainLogin = () => {
   
     }
   return (
-    <div className="p-7 h-screen flex flex-col justify-between">
+    <div>
+      <div className="p-7 h-screen flex flex-col justify-between">
       <div>
-        <img className='w-16 mb-10' src="https://www.svgrepo.com/show/505031/uber-driver.svg" alt="" />
+        <img className='w-16 mb-10' src="/uber-driver.svg" alt="" />
 
       <form onSubmit={(e)=>{
         submitHandler(e)
@@ -52,9 +53,10 @@ const CaptainLogin = () => {
       <div>
         <Link
         to="/login"
-        className="bg-[#d5622d] flex items-center justify-center text-white font-semibold mb-5 rounded px-4 py-2  w-full text-lg placeholder:text-base" 
+        className="bg-[#d5622d] flex items-center justify-center text-white font-semibold mb-5 rounded px-4 py-2  w-full" 
         >Sign in as User</Link>
       </div>
+    </div>
     </div>
   )
 }
