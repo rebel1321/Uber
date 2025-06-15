@@ -24,7 +24,7 @@ module.exports.registerUser = async (req, res, next) => {
     });
 
     const token = user.generateAuthToken();
-    res.status(201).json({ token, user });
+    res.status(201).json({ success:true,token, user });
   } catch (error) {
     next(error); // passes the error to Express global error handler
   }
@@ -51,7 +51,7 @@ module.exports.loginUser = async (req, res, next) => {
 
     const token = user.generateAuthToken();
     res.cookie('token', token);
-    res.status(200).json({ token, user });
+    res.status(200).json({success:true, token, user });
   } catch (error) {
     next(error);
   }
@@ -64,9 +64,21 @@ module.exports.getUserProfile = async (req, res, next) => {
 }
 
 module.exports.logoutUser = async (req, res, next) => {
-  res.clearCookie('token');
-  const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
-  await blacklistToken.create({token});
+  try {
+    res.clearCookie('token');
+    const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
 
-  res.status(200).json({ message: "User logged out successfully" });
-}
+    if (!token) {
+      return res.status(400).json({ message: "Token not provided" });
+    }
+
+    const alreadyBlacklisted = await blacklistToken.findOne({ token });
+    if (!alreadyBlacklisted) {
+      await blacklistToken.create({ token });
+    }
+
+    res.status(200).json({ message: "User logged out successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
