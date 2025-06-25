@@ -16,7 +16,6 @@ module.exports.createCaptain = async ({
       password,
       vehicle: {
         color,
-        model,
         plate,
         capacity,
         vehicleType
@@ -24,7 +23,8 @@ module.exports.createCaptain = async ({
     });
   
     return captain;
-  } catch (error) {
-    throw new Error('Error creating captain');
-  }
+  }catch (error) {
+  console.error('MongoDB Error while creating captain:', error); // 👈 THIS LINE is critical
+  throw new Error('Error creating captain');
+}
 }
