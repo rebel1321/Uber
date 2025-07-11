@@ -1,8 +1,8 @@
+const authMiddleware = require('../middleware/authMiddleware');
 const express = require('express')
 const router = express.Router();
 const {body} =require("express-validator")
 const captainController = require('../controllers/captainController');
-const authMiddleware = require('../middleware/authMiddleware');
 
 
 router.post('/register',[
