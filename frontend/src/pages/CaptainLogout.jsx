@@ -14,7 +14,7 @@ const CaptainLogout = () => {
       return
     }
 
-    axios.get(`${import.meta.env.VITE_BASE_URL}/api/captain/logout`, {
+    axios.get(`${import.meta.env.VITE_BASE_URL}/captain/logout`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

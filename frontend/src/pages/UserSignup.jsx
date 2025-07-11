@@ -21,7 +21,7 @@ const UserSignup = () => {
       password:password
     }
 
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/user/register`, newUser)
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/user/register`, newUser)
     if(response.status === 201){
       const data = response.data
       setUser(data.user)

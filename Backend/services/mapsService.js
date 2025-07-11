@@ -59,7 +59,7 @@ const getDistanceAndTime = async (originAddress, destinationAddress) => {
   return response.data.rows[0].elements[0];
 };
 const getAutoCompleteSuggestions = async (input) => {
-  if (!input || input.length < 3) {
+  if (!input || input.length < 1) {
     throw new Error('Query must be at least 3 characters long');
   }
   const apiKey = process.env.OLA_API_KEY;

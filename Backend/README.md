@@ -375,7 +375,7 @@ GET
   "message": "Unauthorized"
 }
 ```
-MAP ROUTES
+
 ---
 
 ## /api/maps/get-coordinates
@@ -568,5 +568,56 @@ POST
 ```json
 {
   "error": "Failed to create ride request"
+}
+```
+
+---
+
+## /api/rides/get-fare
+
+**Description**  
+Get estimated fare for a ride between two locations for all vehicle types.
+
+**Method**  
+GET
+
+**Headers**  
+- `Authorization`: Bearer <token>
+
+**Query Parameters**  
+- `pickup`: (required, string, at least 3 characters) Pickup address  
+- `destination`: (required, string, at least 3 characters) Destination address
+
+**Responses**  
+- **200**: Returns estimated fares for each vehicle type  
+- **400**: Validation error  
+- **500**: Failed to calculate fare
+
+### Example Successful Response (200)
+```json
+{
+  "auto": 45,
+  "car": 78,
+  "moto": 28
+}
+```
+
+### Example Error Response (400)
+```json
+{
+  "errors": [
+    {
+      "msg": "Invalid pickup address",
+      "param": "pickup",
+      "location": "query"
+    }
+  ]
+}
+```
+
+### Example Error Response (500)
+```json
+{
+  "message": "Pickup and destination are required to calculate fare"
 }
 ```
