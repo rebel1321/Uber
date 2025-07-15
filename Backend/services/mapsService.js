@@ -1,5 +1,5 @@
 const axios = require('axios');
-
+const Captain = require('../models/captainModel')
 const getAddressCoordinates = async (address) => {
   const apiKey = process.env.OLA_API_KEY;
   const url = 'https://api.olamaps.io/places/v1/geocode';
@@ -79,9 +79,26 @@ const getAutoCompleteSuggestions = async (input) => {
     throw new Error('Failed to fetch autocomplete suggestions');
   }
 };
+const getCaptainsInTheRadius = async (ltd, lng, radius) => {
 
+    // radius in km
+
+
+    const captains = await Captain.find({
+        location: {
+            $geoWithin: {
+                $centerSphere: [ [ ltd, lng ], radius / 6371 ]
+            }
+        }
+    });
+
+    return captains;
+
+
+}
 module.exports = {
   getAddressCoordinates,
   getDistanceAndTime,
-  getAutoCompleteSuggestions
+  getAutoCompleteSuggestions,
+  getCaptainsInTheRadius
 };

@@ -47,6 +47,7 @@ const CaptainLogin = () => {
           setEmail(e.target.value)
         }}
         type="email"
+        autoComplete="current-password"
          placeholder="email@example.com" />
         <h3 className="text-lg font-medium mb-2">Enter Password</h3>
         <input className="bg-[#eeeeee] mb-7 rounded px-4 py-2 border w-full text-lg placeholder:text-base" 
@@ -55,6 +56,7 @@ const CaptainLogin = () => {
         onChange={(e)=>{
           setPassword(e.target.value)
         }}
+        autoComplete="current-password"
         type="password" placeholder="password" />
         <button
         className="bg-[#111] text-white font-semibold mb-3 rounded px-4 py-2  w-full text-lg placeholder:text-base" 

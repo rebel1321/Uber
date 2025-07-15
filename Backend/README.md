@@ -621,3 +621,156 @@ GET
   "message": "Pickup and destination are required to calculate fare"
 }
 ```
+
+---
+
+## /api/rides/confirm
+
+**Description**  
+Captain confirms a ride and accepts it.
+
+**Method**  
+POST
+
+**Headers**  
+- `Authorization`: Bearer <token> (captain token)
+
+**Request Body**  
+```json
+{
+  "rideId": "required, valid MongoDB ObjectId"
+}
+```
+
+**Responses**  
+- **200**: Ride confirmed and accepted, returns ride details  
+- **400**: Validation error  
+- **500**: Failed to confirm ride
+
+### Example Successful Response (200)
+```json
+{
+  "_id": "65a1b2c3d4e5f6a7b8c9d0e1",
+  "user": { /* user object */ },
+  "captain": { /* captain object */ },
+  "pickup": "Connaught Place, New Delhi",
+  "destination": "India Gate, New Delhi",
+  "fare": 120,
+  "otp": "123456",
+  "status": "accepted"
+}
+```
+
+### Example Error Response (400)
+```json
+{
+  "errors": [
+    {
+      "msg": "Invalid ride id",
+      "param": "rideId",
+      "location": "body"
+    }
+  ]
+}
+```
+
+---
+
+## /api/rides/start-ride
+
+**Description**  
+Captain starts the ride after verifying the OTP.
+
+**Method**  
+GET
+
+**Headers**  
+- `Authorization`: Bearer <token> (captain token)
+
+**Query Parameters**  
+- `rideId`: (required, valid MongoDB ObjectId)  
+- `otp`: (required, string, 6 digits)  
+
+**Responses**  
+- **200**: Ride started successfully, returns ride details  
+- **400**: Validation error  
+- **500**: Failed to start ride
+
+### Example Successful Response (200)
+```json
+{
+  "_id": "65a1b2c3d4e5f6a7b8c9d0e1",
+  "user": { /* user object */ },
+  "captain": { /* captain object */ },
+  "pickup": "Connaught Place, New Delhi",
+  "destination": "India Gate, New Delhi",
+  "fare": 120,
+  "otp": "123456",
+  "status": "ongoing"
+}
+```
+
+### Example Error Response (400)
+```json
+{
+  "errors": [
+    {
+      "msg": "Invalid ride id",
+      "param": "rideId",
+      "location": "query"
+    }
+  ]
+}
+```
+
+---
+
+## /api/rides/end-ride
+
+**Description**  
+Captain ends the ride after completion.
+
+**Method**  
+POST
+
+**Headers**  
+- `Authorization`: Bearer <token> (captain token)
+
+**Request Body**  
+```json
+{
+  "rideId": "required, valid MongoDB ObjectId"
+}
+```
+
+**Responses**  
+- **200**: Ride ended successfully, returns ride details  
+- **400**: Validation error  
+- **500**: Failed to end ride
+
+### Example Successful Response (200)
+```json
+{
+  "_id": "65a1b2c3d4e5f6a7b8c9d0e1",
+  "user": { /* user object */ },
+  "captain": { /* captain object */ },
+  "pickup": "Connaught Place, New Delhi",
+  "destination": "India Gate, New Delhi",
+  "fare": 120,
+  "otp": "123456",
+  "status": "completed"
+}
+```
+
+### Example Error Response (400)
+```json
+{
+  "errors": [
+    {
+      "msg": "Invalid ride id",
+      "param": "rideId",
+      "location": "body"
+    }
+  ]
+}
+```
