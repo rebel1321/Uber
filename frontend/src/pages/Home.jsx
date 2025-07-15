@@ -11,6 +11,7 @@ import WaitingForDriver from "../components/WaitingForDriver";
 import { useSocket } from '../context/SocketContext'
 import { useUser } from '../context/UserContext'
 import { useNavigate } from "react-router-dom";
+import LiveTracking from "../components/LiveTracking";
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -215,13 +216,9 @@ useGSAP(() => {
       />
 
       {/* Background Image */}
-      <div className="h-screen w-screen">
-        <img
-          className="h-full w-full object-cover"
-          src="/userHome.gif"
-          alt="Background animation"
-        />
-      </div>
+     <div className="absolute top-0 left-0 w-full h-full -z-10">
+  <LiveTracking />
+</div>
 
       {/* Form Overlay */}
       <div className="flex flex-col justify-end h-screen absolute top-0 w-full ">
