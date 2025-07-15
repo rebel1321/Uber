@@ -16,6 +16,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
 app.use('/api/user', userRoutes);
 app.use('/api/captain', captainRoutes);
 app.use('/api/maps', mapsRoutes);
