@@ -6,9 +6,9 @@ import (
 	"os"
 
 	"uber/config"
+	"uber/internal/cron"
 	"uber/internal/middleware"
 	"uber/internal/realtime"
-	"uber/internal/cron"
 	"uber/internal/routes"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +21,6 @@ func Start() {
 	if err != nil {
 		log.Println("⚠️ No .env file found - using platform environment variables")
 	}
-
 
 	// ✅ Start periodic ping
 	cron.StartPing()

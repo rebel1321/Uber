@@ -45,7 +45,7 @@ func (h *Hub) Register(client *Client) {
 	if _, ok := h.byType[client.userType][client.userID]; !ok {
 		h.byType[client.userType][client.userID] = make(map[*Client]bool)
 	}
-	
+
 	h.byType[client.userType][client.userID][client] = true
 }
 
