@@ -1,16 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useSocket } from "../context/SocketContext";
+import { useUser } from "../context/UserContext";
 import axios from "axios";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import "remixicon/fonts/remixicon.css";
+import { useNavigate } from "react-router-dom";
 import LocationSearchPanel from "../components/LocationSearchPanel";
 import VehiclePanel from "../components/VehiclePanel";
 import ConfirmRide from "../components/ConfirmRide";
 import LookingForDriver from "../components/LookingForDriver";
 import WaitingForDriver from "../components/WaitingForDriver";
-import { useSocket } from '../context/SocketContext'
-import { useUser } from '../context/UserContext'
-import { useNavigate } from "react-router-dom";
 import LiveTracking from "../components/LiveTracking";
 
 const Home = () => {
@@ -32,27 +32,42 @@ const Home = () => {
   const [activeField, setActiveField] = useState(null);
   const [fare, setFare] = useState({});
   const [vehicleType, setVehicleType] = useState(null);
+  const [tripType, setTripType] = useState("one_way");
   const [ride, setRide] = useState(null);
-  
-  const { socket } = useSocket();
+
+  const { isConnected, on, send } = useSocket();
   const { user } = useUser();
   const navigate = useNavigate();
+
   useEffect(() => {
-        socket.emit("join", { userType: "user", userId: user._id })
-    }, [ user ])
+    if (!isConnected || !user?.id) {
+      return;
+    }
+    send("join", { userType: "user", userId: user.id });
+  }, [isConnected, send, user]);
 
-    socket.on('ride-confirmed', ride => {
+  useEffect(() => {
+    if (!isConnected) {
+      return undefined;
+    }
 
+    const offConfirmed = on("ride-confirmed", (rideData) => {
+      setVehicleFound(false);
+      setWaitingForDriver(true);
+      setRide(rideData);
+    });
 
-        setVehicleFound(false)
-        setWaitingForDriver(true)
-        setRide(ride)
-    })
-    socket.on('ride-started', ride => {
-        console.log("ride")
-        setWaitingForDriver(false)
-        navigate('/riding', { state: { ride } }) // Updated navigate to include ride data
-    })
+    const offStarted = on("ride-started", (rideData) => {
+      setWaitingForDriver(false);
+      navigate("/riding", { state: { ride: rideData } });
+    });
+
+    return () => {
+      offConfirmed();
+      offStarted();
+    };
+  }, [isConnected, navigate, on]);
+  
 
   const handlePickupChange = async (e) => {
     setPickup(e.target.value);
@@ -180,14 +195,14 @@ useGSAP(() => {
     const response = await axios.get(
       `${import.meta.env.VITE_BASE_URL}/rides/get-fare`,
       {
-        params: { pickup, destination },
+        params: { pickup, destination, tripType },
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );
 
-    setFare(response.data);
+    setFare(response.data?.fare || {});
   }
 
   async function createRide() {
@@ -197,6 +212,7 @@ useGSAP(() => {
         pickup,
         destination,
         vehicleType,
+        tripType,
       },
       {
         headers: {
@@ -233,6 +249,22 @@ useGSAP(() => {
             <i className="ri-arrow-down-wide-line"></i>
           </h5>
           <h4 className="text-2xl font-semibold">Find a trip</h4>
+          <div className="mt-3 flex gap-2">
+            <button
+              type="button"
+              onClick={() => setTripType("one_way")}
+              className={`px-3 py-1 rounded-full text-sm ${tripType === "one_way" ? "bg-black text-white" : "bg-gray-200 text-gray-700"}`}
+            >
+              One way
+            </button>
+            <button
+              type="button"
+              onClick={() => setTripType("round_trip")}
+              className={`px-3 py-1 rounded-full text-sm ${tripType === "round_trip" ? "bg-black text-white" : "bg-gray-200 text-gray-700"}`}
+            >
+              Round trip
+            </button>
+          </div>
           <form
             onSubmit={(e) => {
               submitHandler(e);

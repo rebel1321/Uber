@@ -5,8 +5,8 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import RidePopUp from "../components/RidePopUp";
 import ConfirmRidePopUp from "../components/ConfirmRidePopUp";
-import { useSocket } from '../context/SocketContext'
 import { useCaptain } from '../context/CaptainContext';
+import { useSocket } from "../context/SocketContext";
 import axios from 'axios'
 
 const CaptainHome = () => {
@@ -15,48 +15,57 @@ const CaptainHome = () => {
   const [ride, setRide] = useState(null);
   const ridePopupPanelRef = useRef(null);
   const confirmRidePopupPanelRef = useRef(null);
-  const { socket } = useSocket();
   const { captain } = useCaptain();
+  const { isConnected, on, send } = useSocket();
 
   useEffect(() => {
-        socket.emit('join', {
-            userId: captain._id,
-            userType: 'captain'
-        })
+    if (!isConnected || !captain?.id) {
+      return;
+    }
+    send("join", { userType: "captain", userId: captain.id });
 
-         const updateLocation = () => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(position => {
-                    console.log('Location updated:', position.coords);
-                    socket.emit('update-location-captain', {
-                        userId: captain._id,
-                        location: {
-                            ltd: position.coords.latitude,
-                            lng: position.coords.longitude
-                        }
-                    })
-                })
-            }
-        }
+    const updateLocation = () => {
+      if (!navigator.geolocation) {
+        return;
+      }
+      navigator.geolocation.getCurrentPosition((position) => {
+        send("update-location-captain", {
+          userId: captain.id,
+          location: {
+            ltd: position.coords.latitude,
+            lng: position.coords.longitude,
+          },
+        });
+      });
+    };
 
-        const locationInterval = setInterval(updateLocation, 10000)
-        updateLocation()
+    const locationInterval = setInterval(updateLocation, 10000);
+    updateLocation();
 
-        return () => clearInterval(locationInterval)
-      })
-      socket.on('new-ride', (data) => {
-        console.log('New ride data received:', data);
-        setRide(data)
-        setRidePopupPanel(true)
+    return () => clearInterval(locationInterval);
+  }, [captain, isConnected, send]);
 
-    })
+  useEffect(() => {
+    if (!isConnected) {
+      return undefined;
+    }
+
+    const offNewRide = on("new-ride", (rideData) => {
+      setRide(rideData);
+      setRidePopupPanel(true);
+    });
+
+    return () => {
+      offNewRide();
+    };
+  }, [isConnected, on]);
 
     async function confirmRide() {
 
         const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/confirm`, {
 
-            rideId: ride._id,
-            captainId: captain._id,
+          rideId: ride._id,
+          captainId: captain.id,
 
 
         }, {

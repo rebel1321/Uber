@@ -1,18 +1,36 @@
 import React from 'react'
 
 const WaitingForDriver = (props) => {
+  const vehicleType = props.ride?.captain?.vehicle?.vehicleType || props.ride?.vehicleType || "car"
+  const vehicleImages = {
+    car: "/car.png",
+    auto: "/auto.png",
+    moto: "/motor.png",
+  }
+  const vehicleLabelMap = {
+    car: "Car",
+    auto: "Auto",
+    moto: "Moto",
+  }
+  const vehicleImage = vehicleImages[vehicleType] || "/car.png"
+  const vehicleLabel = vehicleLabelMap[vehicleType] || "Car"
+
   return (
     <div>
       <h5 className='p-1 text-center w-[93%] absolute top-0' onClick={() => {
-        props.waitingForDriver(false)
+        props.setWaitingForDriver(false)
       }}><i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i></h5>
 
       <div className='flex items-center justify-between'>
-        <img className='h-12' src="/car.png" alt="" />
+        <img className='h-12' src={vehicleImage} alt={vehicleLabel} />
         <div className='text-right'>
-          <h2 className='text-lg font-medium capitalize'>{props.ride?.captain.fullName.firstName}</h2>
-          <h4 className='text-xl font-semibold -mt-1 -mb-1'>{props.ride?.captain.vehicle.plate}</h4>
-          <p className='text-sm text-gray-600'>Maruti Suzuki Alto</p>
+          <h2 className='text-lg font-medium capitalize'>
+            {props.ride?.captain?.fullName?.firstName} {props.ride?.captain?.fullName?.lastName}
+          </h2>
+          <h4 className='text-xl font-semibold -mt-1 -mb-1'>{props.ride?.captain?.vehicle?.plate || ""}</h4>
+          <p className='text-sm text-gray-600'>
+            {vehicleLabel} {props.ride?.captain?.vehicle?.color ? `- ${props.ride?.captain?.vehicle?.color}` : ""}
+          </p>
           <h1 className='text-lg font-semibold'>{props.ride?.otp} </h1>
         </div>
       </div>

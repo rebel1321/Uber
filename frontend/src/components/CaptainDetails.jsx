@@ -4,13 +4,20 @@ import { useCaptain } from '../context/CaptainContext'
 
 const CaptainDetails = () => {
   const { captain } = useCaptain()
+  const fullName = captain?.fullName
+    ? `${captain.fullName.firstName} ${captain.fullName.lastName}`
+    : "Captain"
+  const vehicle = captain?.vehicle || {}
 
     return (
       <div>
         <div className='flex items-center justify-between'>
           <div className='flex items-center justify-start gap-3'>
             <img className='h-10 w-10 rounded-full object-cover' src="/CaptainProf.png" alt="" />
-            <h4 className='text-lg font-medium capitalize'>{captain.fullName.firstName + " " + captain.fullName.lastName}</h4>
+            <div>
+              <h4 className='text-lg font-medium capitalize'>{fullName}</h4>
+              <p className='text-xs text-gray-500'>{vehicle.vehicleType || "Vehicle"} {vehicle.plate ? `• ${vehicle.plate}` : ""}</p>
+            </div>
           </div>
           <div>
             <h4 className='text-xl font-semibold'>₹2095.20</h4>

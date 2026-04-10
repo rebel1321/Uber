@@ -5,6 +5,8 @@ import axios from 'axios';
 const ConfirmRidePopUp = (props) => {
   const [otp, setOtp] = useState('');
   const navigate = useNavigate();
+  const distanceKm = props.ride?.distance
+  const distanceLabel = typeof distanceKm === "number" ? `${distanceKm.toFixed(1)} KM` : "-- KM"
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -48,7 +50,7 @@ const ConfirmRidePopUp = (props) => {
           <img className='h-12 rounded-full object-cover w-12' src="/UserProf.png" alt="" />
           <h2 className='text-lg font-medium capitalize'>{props.ride?.user.fullName.firstName}</h2>
         </div>
-        <h5 className='text-lg font-semibold'>2.2 KM</h5>
+        <h5 className='text-lg font-semibold'>{distanceLabel}</h5>
       </div>
 
       <div className='flex gap-2 justify-between flex-col items-center'>

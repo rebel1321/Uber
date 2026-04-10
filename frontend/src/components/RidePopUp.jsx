@@ -1,6 +1,8 @@
 import React from 'react'
 
 const RidePopUp = (props) => {
+    const distanceKm = props.ride?.distance
+    const distanceLabel = typeof distanceKm === "number" ? `${distanceKm.toFixed(1)} KM` : "-- KM"
   return (
     <div>
             <h5 className='p-1 text-center w-[93%] absolute top-0' onClick={() => {
@@ -12,7 +14,7 @@ const RidePopUp = (props) => {
                     <img className='h-12 rounded-full object-cover w-12' src="UserProf.png" alt="" />
                     <h2 className='text-lg font-medium'>{props.ride?.user.fullName.firstName + " " + props.ride?.user.fullName.lastName}</h2>
                 </div>
-                <h5 className='text-lg font-semibold'>2.2 KM</h5>
+                <h5 className='text-lg font-semibold'>{distanceLabel}</h5>
             </div>
             <div className='flex gap-2 justify-between flex-col items-center'>
                 <div className='w-full mt-5'>
