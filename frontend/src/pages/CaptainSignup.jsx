@@ -16,11 +16,16 @@ const CaptainSignup = () => {
   const [ vehiclePlate, setVehiclePlate ] = useState('')
   const [ vehicleCapacity, setVehicleCapacity ] = useState('')
   const [ vehicleType, setVehicleType ] = useState('')
+  const [ isLoading, setIsLoading ] = useState(false)
 
   const {captain,setCaptain} =useCaptain();
 
   const submitHandler = async (e) => {
     e.preventDefault()
+    if (isLoading) {
+      return
+    }
+    setIsLoading(true)
     const captainData = {
       fullName: {
         firstName: firstName,
@@ -36,13 +41,19 @@ const CaptainSignup = () => {
       }
     }
 
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captain/register`, captainData)
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captain/register`, captainData)
 
-    if (response.status === 201) {
-      const data = response.data
-      setCaptain(data.captain)
-      localStorage.setItem('token', data.accessToken)
-      navigate('/captain-home')
+      if (response.status === 201) {
+        const data = response.data
+        setCaptain(data.captain)
+        localStorage.setItem('token', data.accessToken)
+        navigate('/captain-home')
+      }
+    } catch (err) {
+      console.error('Signup failed:', err.response?.data || err.message)
+    } finally {
+      setIsLoading(false)
     }
 
     setEmail('')
@@ -174,8 +185,11 @@ const CaptainSignup = () => {
               </select>
             </div>
 
-            <button className="bg-[#111] text-white font-semibold mb-3 rounded-lg px-4 py-2 w-full text-lg placeholder:text-base">
-              Create Captain Account
+            <button
+              disabled={isLoading}
+              className="bg-[#111] text-white font-semibold mb-3 rounded-lg px-4 py-2 w-full text-lg placeholder:text-base disabled:opacity-60"
+            >
+              {isLoading ? 'Creating account...' : 'Create Captain Account'}
             </button>
           </form>
           <p className="text-center">

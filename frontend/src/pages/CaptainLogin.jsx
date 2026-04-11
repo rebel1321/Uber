@@ -8,23 +8,34 @@ const CaptainLogin = () => {
     const [password,setPassword] = useState('')
   
     const {captain,setCaptain} =useCaptain();
+    const [ isLoading, setIsLoading ] = useState(false)
     const navigate = useNavigate()
     const submitHandler = async (e) => {
     e.preventDefault();
+    if (isLoading) {
+      return
+    }
+    setIsLoading(true)
     const captain = {
       email: email,
       password
     }
 
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captain/login`, captain)
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captain/login`, captain)
 
-    if (response.status === 200) {
-      const data = response.data
+      if (response.status === 200) {
+        const data = response.data
 
-      setCaptain(data.captain)
-      localStorage.setItem('token', data.accessToken)
-      navigate('/captain-home')
+        setCaptain(data.captain)
+        localStorage.setItem('token', data.accessToken)
+        navigate('/captain-home')
 
+      }
+    } catch (err) {
+      console.error('Login failed:', err.response?.data || err.message)
+    } finally {
+      setIsLoading(false)
     }
 
     setEmail('')
@@ -59,8 +70,9 @@ const CaptainLogin = () => {
         autoComplete="current-password"
         type="password" placeholder="password" />
         <button
-        className="bg-[#111] text-white font-semibold mb-3 rounded px-4 py-2  w-full text-lg placeholder:text-base" 
-        >Login</button>
+        disabled={isLoading}
+        className="bg-[#111] text-white font-semibold mb-3 rounded px-4 py-2  w-full text-lg placeholder:text-base disabled:opacity-60" 
+        >{isLoading ? 'Logging in...' : 'Login'}</button>
 
         <p className="text-center">New to Uber Drive?{" "}<Link to="/captain-signup" className="text-blue-600">Sign up as a Captain</Link></p>
       </form>

@@ -5,7 +5,7 @@ import axios from "axios";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import "remixicon/fonts/remixicon.css";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import LocationSearchPanel from "../components/LocationSearchPanel";
 import VehiclePanel from "../components/VehiclePanel";
 import ConfirmRide from "../components/ConfirmRide";
@@ -230,9 +230,16 @@ useGSAP(() => {
         src="/Uberuser.png"
         alt="User Icon"
       />
+      <Link
+        to="/user/logout"
+        className="absolute right-5 top-5 h-10 w-10 bg-white flex items-center justify-center rounded-full z-20"
+        aria-label="Log out"
+      >
+        <i className="text-lg font-medium ri-logout-box-r-line"></i>
+      </Link>
 
       {/* Background Image */}
-     <div className="absolute top-0 left-0 w-full h-full -z-10">
+     <div className="absolute top-0 left-0 w-full h-full z-0">
   <LiveTracking />
 </div>
 
