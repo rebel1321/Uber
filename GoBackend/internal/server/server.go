@@ -18,8 +18,8 @@ import (
 func Start() {
 	// Load env
 	err := godotenv.Load("config/.env")
-	if err != nil {
-		log.Println("⚠️ No .env file found - using platform environment variables")
+	if err != nil && !os.IsNotExist(err) {
+		log.Printf("⚠️ Failed to load config/.env: %v", err)
 	}
 
 	// ✅ Start periodic ping
