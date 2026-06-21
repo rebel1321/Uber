@@ -1,0 +1,8 @@
+services:
+  springserver:
+    build: .
+    container_name: uber-spring-server
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env

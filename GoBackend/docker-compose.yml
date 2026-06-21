@@ -1,13 +1,1 @@
-services:
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: uber-go-backend
-    restart: unless-stopped
-    ports:
-      - "8080:8080"
-    env_file:
-      - ./config/.env
-    environment:
-      PORT: 8080
+ 
