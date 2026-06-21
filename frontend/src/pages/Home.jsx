@@ -272,12 +272,9 @@ useGSAP(() => {
               Round trip
             </button>
           </div>
-          <form
-            onSubmit={(e) => {
-              submitHandler(e);
-            }}
-          >
-            <div className="line absolute h-16 w-1 top-[40%] bg-gray-700 left-10 rounded"></div>
+          <form className="relative " onSubmit={submitHandler}>
+  <div className="absolute left-5 top-14 h-15 w-[2px] bg-gray-700 rounded"></div>
+
             <input
               onClick={() => {
                 setPanelOpen(true);

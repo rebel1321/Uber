@@ -12,6 +12,8 @@ import com.uber.springserver.utils.PasswordUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,10 +45,10 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public Map<String, Object> register(@Valid @RequestBody UserRegisterRequest request) {
+    public ResponseEntity<Map<String, Object>> register(@Valid @RequestBody UserRegisterRequest request) {
         String email = request.getEmail().trim().toLowerCase(Locale.ROOT);
         if (userService.findByEmail(email).isPresent()) {
-            return Map.of("message", "User already exists");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "User already exists"));
         }
 
         User user = new User();
@@ -63,16 +65,16 @@ public class UserController {
         response.put("accessToken", accessToken);
         response.put("refreshToken", refreshToken);
         response.put("user", user);
-        return response;
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody UserLoginRequest request) {
+    public ResponseEntity<Map<String, Object>> login(@RequestBody UserLoginRequest request) {
         String email = request.getEmail() == null ? "" : request.getEmail().trim().toLowerCase(Locale.ROOT);
 
         User user = userService.findByEmail(email).orElse(null);
         if (user == null || !passwordUtil.matches(request.getPassword(), user.getPassword())) {
-            return Map.of("message", "Invalid credentials");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid credentials"));
         }
 
         String accessToken = jwtUtil.generateAccessToken(user.getId());
@@ -83,48 +85,48 @@ public class UserController {
         response.put("accessToken", accessToken);
         response.put("refreshToken", refreshToken);
         response.put("user", user);
-        return response;
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/refresh")
-    public Map<String, Object> refresh(@RequestBody RefreshTokenRequest request) {
+    public ResponseEntity<Map<String, Object>> refresh(@RequestBody RefreshTokenRequest request) {
         try {
             Claims claims = jwtUtil.parseRefreshToken(request.getRefreshToken());
             String userId = claims.get("_id", String.class);
 
             User user = userService.findById(userId).orElse(null);
             if (user == null || user.getRefreshToken() == null || !user.getRefreshToken().equals(request.getRefreshToken())) {
-                return Map.of("message", "Token mismatch");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Token mismatch"));
             }
 
             String newAccessToken = jwtUtil.generateAccessToken(userId);
-            return Map.of("accessToken", newAccessToken);
+            return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
         } catch (Exception ex) {
-            return Map.of("message", "Invalid token");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid token"));
         }
     }
 
     @GetMapping("/profile")
-    public Map<String, Object> profile(HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> profile(HttpServletRequest request) {
         User user = RequestContext.getUser(request);
         if (user == null) {
-            return Map.of("message", "User not found");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "User not found"));
         }
-        return Map.of("user", user, "message", "Profile fetched successfully");
+        return ResponseEntity.ok(Map.of("user", user, "message", "Profile fetched successfully"));
     }
 
     @GetMapping("/logout")
-    public Map<String, Object> logout(@RequestHeader(name = "Authorization", required = false) String authorization) {
+    public ResponseEntity<Map<String, Object>> logout(@RequestHeader(name = "Authorization", required = false) String authorization) {
         if (authorization == null || authorization.isBlank()) {
-            return Map.of("message", "Token missing");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Token missing"));
         }
 
         String[] parts = authorization.split(" ");
         if (parts.length != 2) {
-            return Map.of("message", "Invalid token format");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Invalid token format"));
         }
 
         blacklistService.add(parts[1]);
-        return Map.of("message", "User logged out successfully");
+        return ResponseEntity.ok(Map.of("message", "User logged out successfully"));
     }
 }

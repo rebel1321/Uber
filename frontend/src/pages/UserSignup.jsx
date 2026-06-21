@@ -28,11 +28,13 @@ const UserSignup = () => {
 
     try {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/user/register`, newUser)
-      if(response.status === 201){
+      if(response.status === 201 && response.data?.accessToken){
         const data = response.data
         setUser(data.user)
         localStorage.setItem('token', data.accessToken)
         navigate('/home')
+      } else {
+        console.error('Signup failed: access token missing in response')
       }
     } catch (err) {
       console.error('Signup failed:', err.response?.data || err.message)

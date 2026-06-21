@@ -24,12 +24,14 @@ const CaptainLogin = () => {
     try {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captain/login`, captain)
 
-      if (response.status === 200) {
+      if (response.status === 200 && response.data?.accessToken) {
         const data = response.data
 
         setCaptain(data.captain)
         localStorage.setItem('token', data.accessToken)
         navigate('/captain-home')
+      } else {
+        console.error('Login failed: access token missing in response')
 
       }
     } catch (err) {
