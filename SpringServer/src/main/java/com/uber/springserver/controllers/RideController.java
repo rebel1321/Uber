@@ -52,7 +52,9 @@ public class RideController {
         try {
             Ride ride = rideService.createRide(user.getId(), body.getPickup(), body.getDestination(), body.getVehicleType(), tripType);
             try {
-                realtimeService.broadcastToCaptains("new-ride", rideService.buildRidePayload(ride.getId()));
+                Map<String, Object> payload = rideService.buildRidePayload(ride.getId());
+                payload.remove("otp");
+                realtimeService.broadcastToCaptains("new-ride", payload);
             } catch (Exception ignored) {
             }
             return ride;

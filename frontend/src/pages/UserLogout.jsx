@@ -7,7 +7,7 @@ export const UserLogout = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        const token = localStorage.getItem('token')
+        const token = localStorage.getItem('userToken')
 
         if (!token) {
             navigate('/login')
@@ -21,7 +21,7 @@ export const UserLogout = () => {
         }).catch((err) => {
             console.error('Logout failed:', err.response?.data || err.message)
         }).finally(() => {
-            localStorage.removeItem('token')
+            localStorage.removeItem('userToken')
             navigate('/login')
         })
     }, [navigate])

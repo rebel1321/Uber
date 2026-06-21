@@ -71,14 +71,73 @@ public class MapService {
                 "&destinations=" + URLEncoder.encode(destinations, StandardCharsets.UTF_8) +
                 "&api_key=" + URLEncoder.encode(apiKey, StandardCharsets.UTF_8);
 
-        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-        JsonNode root = objectMapper.readTree(response.getBody());
-        JsonNode firstElement = root.path("rows").get(0).path("elements").get(0);
+        double distance = 0;
+        double duration = 0;
+
+        try {
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+            JsonNode root = objectMapper.readTree(response.getBody());
+
+            JsonNode rows = root.path("rows");
+            if (rows.isArray() && !rows.isEmpty()) {
+                JsonNode elements = rows.get(0).path("elements");
+                if (elements.isArray() && !elements.isEmpty()) {
+                    JsonNode firstElement = elements.get(0);
+
+                    JsonNode distanceNode = firstElement.path("distance");
+                    JsonNode durationNode = firstElement.path("duration");
+
+                    distance = readNodeValue(distanceNode, "distance", "distanceMeters", "value");
+                    duration = readNodeValue(durationNode, "duration", "durationSeconds", "value");
+                }
+            }
+        } catch (Exception ignored) {
+            // Geocoding succeeded, so calculate a real fallback distance below.
+        }
+
+        if (distance <= 0) {
+            double originLat = ((Number) originCoords.get("latitude")).doubleValue();
+            double originLng = ((Number) originCoords.get("longitude")).doubleValue();
+            double destinationLat = ((Number) destinationCoords.get("latitude")).doubleValue();
+            double destinationLng = ((Number) destinationCoords.get("longitude")).doubleValue();
+
+            double directDistanceKm = haversineKm(originLat, originLng, destinationLat, destinationLng);
+            distance = directDistanceKm * 1000;
+            if (duration <= 0) {
+                duration = directDistanceKm > 0 ? directDistanceKm * 120 : 0;
+            }
+        }
 
         Map<String, Object> data = new HashMap<>();
-        data.put("distance", firstElement.path("distance").asDouble());
-        data.put("duration", firstElement.path("duration").asDouble());
+        data.put("distance", distance);
+        data.put("duration", duration);
         return data;
+    }
+
+    private double readNodeValue(JsonNode node, String... fieldNames) {
+        if (node == null || node.isMissingNode() || node.isNull()) {
+            return 0;
+        }
+        if (node.isObject()) {
+            for (String fieldName : fieldNames) {
+                JsonNode valueNode = node.path(fieldName);
+                if (valueNode.isNumber()) {
+                    return valueNode.asDouble();
+                }
+            }
+        }
+        return node.asDouble(0);
+    }
+
+    private double haversineKm(double lat1, double lng1, double lat2, double lng2) {
+        final double earthRadiusKm = 6371.0;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLng = Math.toRadians(lng2 - lng1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return earthRadiusKm * c;
     }
 
     public List<Object> getAutoCompleteSuggestions(String input) throws Exception {

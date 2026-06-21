@@ -40,10 +40,11 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isConnected || !user?.id) {
+    const userId = user?.id || user?._id;
+    if (!isConnected || !userId) {
       return;
     }
-    send("join", { userType: "user", userId: user.id });
+    send("join", { userType: "user", userId });
   }, [isConnected, send, user]);
 
   useEffect(() => {
@@ -57,14 +58,19 @@ const Home = () => {
       setRide(rideData);
     });
 
-    const offStarted = on("ride-started", (rideData) => {
+    const goToRiding = (rideData) => {
+      setVehicleFound(false);
       setWaitingForDriver(false);
       navigate("/riding", { state: { ride: rideData } });
-    });
+    };
+
+    const offStarted = on("ride-started", goToRiding);
+    const offEnded = on("ride-ended", goToRiding);
 
     return () => {
       offConfirmed();
       offStarted();
+      offEnded();
     };
   }, [isConnected, navigate, on]);
   
@@ -77,7 +83,7 @@ const Home = () => {
         {
           params: { input: e.target.value },
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
           },
         }
       );
@@ -96,7 +102,7 @@ const Home = () => {
         {
           params: { input: e.target.value },
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
           },
         }
       );
@@ -197,7 +203,7 @@ useGSAP(() => {
       {
         params: { pickup, destination, tripType },
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
         },
       }
     );
@@ -216,7 +222,7 @@ useGSAP(() => {
       },
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
         },
       }
     );

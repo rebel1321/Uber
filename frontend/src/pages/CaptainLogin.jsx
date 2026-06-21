@@ -28,7 +28,7 @@ const CaptainLogin = () => {
         const data = response.data
 
         setCaptain(data.captain)
-        localStorage.setItem('token', data.accessToken)
+        localStorage.setItem('captainToken', data.accessToken)
         navigate('/captain-home')
       } else {
         console.error('Login failed: access token missing in response')

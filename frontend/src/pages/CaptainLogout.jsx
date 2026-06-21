@@ -6,7 +6,7 @@ const CaptainLogout = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('captainToken')
 
     if (!token) {
       // Token is missing or invalid
@@ -21,7 +21,7 @@ const CaptainLogout = () => {
     })
       .then((response) => {
         if (response.status === 200) {
-          localStorage.removeItem('token')
+          localStorage.removeItem('captainToken')
           navigate('/captain-login')
         }
       })
@@ -29,7 +29,7 @@ const CaptainLogout = () => {
         console.error('Logout failed:', err.response?.data || err.message)
 
         // Still remove token and redirect to login (force logout)
-        localStorage.removeItem('token')
+        localStorage.removeItem('captainToken')
         navigate('/captain-login')
       })
   }, [navigate])

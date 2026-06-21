@@ -59,7 +59,15 @@ public class AuthInterceptor implements HandlerInterceptor {
         String id = claims.get("_id", String.class);
         String path = request.getRequestURI();
 
-        if (path.contains("/captain") || path.contains("/ride/confirm") || path.contains("/ride/start") || path.contains("/ride/end") || path.contains("/rides/start-ride") || path.contains("/rides/end-ride")) {
+        boolean captainRoute = path.contains("/captain")
+                || path.endsWith("/ride/confirm")
+                || path.endsWith("/ride/start")
+                || path.endsWith("/ride/end")
+                || path.endsWith("/rides/confirm")
+                || path.endsWith("/rides/start-ride")
+                || path.endsWith("/rides/end-ride");
+
+        if (captainRoute) {
             Captain captain = captainService.findById(id).orElse(null);
             if (captain == null) {
                 unauthorized(response, "Captain not found");

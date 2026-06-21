@@ -7,7 +7,7 @@ import { useUser } from '../context/UserContext'
 const UserProtectWrapper = ({
     children
 }) => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('userToken')
     const navigate = useNavigate()
     const { user, setUser } = useUser()
     const [ isLoading, setIsLoading ] = useState(true)
@@ -29,7 +29,7 @@ const UserProtectWrapper = ({
         })
             .catch(err => {
                 console.log(err)
-                localStorage.removeItem('token')
+                localStorage.removeItem('userToken')
                 navigate('/login')
             })
     }, [ token ])

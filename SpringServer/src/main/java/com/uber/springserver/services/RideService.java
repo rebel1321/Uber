@@ -56,14 +56,15 @@ public class RideService {
         return 1;
     }
 
-    private Map<String, Double> estimateFare(double distanceKm, String tripType) {
+    private Map<String, Double> estimateFare(double distanceKm, double durationMinutes, String tripType) {
         Map<String, Double> base = Map.of("auto", 30.0, "car", 50.0, "moto", 20.0);
         Map<String, Double> perKm = Map.of("auto", 8.0, "car", 12.0, "moto", 6.0);
 
         double multiplier = tripMultiplier(tripType);
         Map<String, Double> fare = new HashMap<>();
         for (String vehicle : base.keySet()) {
-            fare.put(vehicle, (base.get(vehicle) + (perKm.get(vehicle) * distanceKm)) * multiplier);
+            double amount = (base.get(vehicle) + perKm.get(vehicle) * distanceKm) * multiplier;
+            fare.put(vehicle, (double) Math.round(amount));
         }
         return fare;
     }
@@ -79,17 +80,12 @@ public class RideService {
         } catch (Exception ignored) {
         }
 
-        if (distanceKm == 0) {
-            Map<String, Object> fallback = new HashMap<>();
-            fallback.put("fare", estimateFare(5, tripType));
-            fallback.put("distance", 5);
-            fallback.put("duration", duration);
-            return fallback;
-        }
+        double effectiveDistance = distanceKm > 0 ? distanceKm : 5;
+        double effectiveDurationMinutes = duration > 0 ? duration / 60.0 : 0;
 
         Map<String, Object> payload = new HashMap<>();
-        payload.put("fare", estimateFare(distanceKm, tripType));
-        payload.put("distance", distanceKm);
+        payload.put("fare", estimateFare(effectiveDistance, effectiveDurationMinutes, tripType));
+        payload.put("distance", effectiveDistance);
         payload.put("duration", duration);
         return payload;
     }

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import LiveTracking from '../components/LiveTracking'
 import { useSocket } from "../context/SocketContext";
+import { useUser } from "../context/UserContext";
 import axios from "axios";
 
 const Riding = () => {
@@ -10,8 +11,16 @@ const Riding = () => {
     const [activeRide, setActiveRide] = useState(ride || null)
     const [isPaying, setIsPaying] = useState(false)
     const navigate = useNavigate()
-    const { isConnected, on } = useSocket()
+    const { isConnected, on, send } = useSocket()
+    const { user } = useUser()
 
+    useEffect(() => {
+        const userId = user?.id || user?._id || activeRide?.user?._id || activeRide?.user?.id
+        if (!isConnected || !userId) {
+            return
+        }
+        send("join", { userType: "user", userId })
+    }, [activeRide, isConnected, send, user])
     useEffect(() => {
         if (!isConnected) {
             return undefined
@@ -57,14 +66,20 @@ const Riding = () => {
                 { rideId: activeRide._id },
                 {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        Authorization: `Bearer ${localStorage.getItem("userToken")}`,
                     },
                 }
             )
+            if (response.data?.error || response.data?.message) {
+                alert(response.data.error || response.data.message)
+                return
+            }
             if (response.status === 200) {
-                setActiveRide((prev) => prev ? { ...prev, paid: true } : prev)
+                setActiveRide((prev) => response.data || (prev ? { ...prev, paid: true } : prev))
                 navigate('/home')
             }
+        } catch (error) {
+            alert(error.response?.data?.message || error.response?.data?.error || "Payment failed. Please try again.")
         } finally {
             setIsPaying(false)
         }

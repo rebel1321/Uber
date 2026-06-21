@@ -33,7 +33,7 @@ const UserLogin = () => {
       if (response.status === 200 && response.data?.accessToken) {
         const data = response.data
         setUser(data.user)
-        localStorage.setItem('token', data.accessToken)
+        localStorage.setItem('userToken', data.accessToken)
         navigate('/home')
       } else {
         console.error('Login failed: access token missing in response')

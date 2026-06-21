@@ -31,7 +31,7 @@ const UserSignup = () => {
       if(response.status === 201 && response.data?.accessToken){
         const data = response.data
         setUser(data.user)
-        localStorage.setItem('token', data.accessToken)
+        localStorage.setItem('userToken', data.accessToken)
         navigate('/home')
       } else {
         console.error('Signup failed: access token missing in response')

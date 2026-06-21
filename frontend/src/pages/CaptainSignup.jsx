@@ -47,7 +47,7 @@ const CaptainSignup = () => {
       if (response.status === 201 && response.data?.accessToken) {
         const data = response.data
         setCaptain(data.captain)
-        localStorage.setItem('token', data.accessToken)
+        localStorage.setItem('captainToken', data.accessToken)
         navigate('/captain-home')
       } else {
         console.error('Signup failed: access token missing in response')
